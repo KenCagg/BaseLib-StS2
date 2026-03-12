@@ -152,8 +152,8 @@ public abstract partial class ModConfig
         }
         catch (Exception e)
         {
-            MainFile.Logger.Error("Failed to load config;");
-            MainFile.Logger.Error(e.ToString());
+            MainFile.Logger.Error("Failed to load config; most likely config types were changed.");
+            MainFile.Logger.Error(e.Message);
         }
         
         _fileActive = false;

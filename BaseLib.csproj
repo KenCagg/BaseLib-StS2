@@ -14,9 +14,9 @@
         <PackageId>Alchyr.Sts2.BaseLib</PackageId>
         <Title>BaseLib-StS2</Title>
         <Description>Mod for Slay the Spire 2 providing utilities and features for other mods.</Description>
-        <Version>0.0.5</Version>
+        <Version>0.1.0</Version>
         <Authors>Alchyr</Authors>
-        <PackageReleaseNotes>CustomAncientModel</PackageReleaseNotes>
+        <PackageReleaseNotes>new mod structure</PackageReleaseNotes>
         <PackageTags>c#</PackageTags>
         <NoWarn>$(NoWarn);NU5128</NoWarn>
 
@@ -90,7 +90,6 @@
     <ItemGroup>
         <None Include="$(MSBuildProjectName)\**" />
         <None Include="LICENSE.txt" />
-        <None Include="mod_manifest.json" />
         <None Include="project.godot" />
         <None Include="README.md" Pack="true" PackagePath="/"/>
         <None Include=".gitignore" />
@@ -102,6 +101,7 @@
         <!-- Temporary for including in .nupkg for template to auto export to mods folder -->
         <Content Include="build\BaseLib.props" PackagePath="/Content/" />
         <Content Include="build\BaseLib.pck" PackagePath="/Content/" />
+        <Content Include="mod_manifest.json" PackagePath="/Content/" />
     </ItemGroup>
 
     <ItemGroup>
@@ -109,8 +109,9 @@
     </ItemGroup>
 
     <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
-        <Message Text="Copying .dll to mods folder." Importance="high" />
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Path)/mods/" />
+        <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Path)/mods/$(MSBuildProjectName)/" />
+        <Copy SourceFiles="mod_manifest.json" DestinationFolder="$(Sts2Path)/mods/$(MSBuildProjectName)/" />
     </Target>
 
     <Target Name="GodotPublish" AfterTargets="Publish" Condition="'$(GodotPath)' != '' and Exists('$(GodotPath)') and '$(IsInnerGodotExport)' != 'true'">
@@ -119,7 +120,7 @@
               EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1"
               ContinueOnError="WarnAndContinue"/>
         <Message Text="Copying Godot .pck to mods folder" Importance="high"/>
-        <Copy SourceFiles="build/$(MSBuildProjectName).pck" DestinationFolder="$(Sts2Path)/mods/" />
+        <Copy SourceFiles="build/$(MSBuildProjectName).pck" DestinationFolder="$(Sts2Path)/mods/$(MSBuildProjectName)/" />
     </Target>
 
     <Target Name="GodotPublishSkipped" AfterTargets="Publish" Condition="'$(GodotPath)' == '' or !Exists('$(GodotPath)')">

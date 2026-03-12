@@ -4,13 +4,13 @@ namespace BaseLib.Utils;
 
 /// <summary>
 /// A basic wrapper around <seealso cref="ConditionalWeakTable{TKey, TValue}"/> for convenience.
+/// While this can be used to store value types, they will be boxed and thus is somewhat inefficient.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TVal"></typeparam>
-/// <param name="defaultVal"></param>
-public class SpireField<TKey, TVal> where TKey : class where TVal : class
+public class SpireField<TKey, TVal> where TKey : class
 {
-    private readonly ConditionalWeakTable<TKey, TVal?> _table = [];
+    private readonly ConditionalWeakTable<TKey, object?> _table = [];
     private readonly Func<TKey, TVal?> _defaultVal;
 
     public SpireField(Func<TVal?> defaultVal)
@@ -26,17 +26,17 @@ public class SpireField<TKey, TVal> where TKey : class where TVal : class
     public TVal? this[TKey obj]
     {
         get => Get(obj);
-        set => Set(obj, value);
+        set => Set(obj, ref value);
     }
 
     public TVal? Get(TKey obj) {
-        if (_table.TryGetValue(obj, out var result)) return result;
+        if (_table.TryGetValue(obj, out var result)) return (TVal?)result;
 
         _table.Add(obj, result = _defaultVal(obj));
-        return result;
+        return (TVal?)result;
     }
 
-    public void Set(TKey obj, TVal? val)
+    public void Set(TKey obj, ref TVal? val)
     {
         _table.AddOrUpdate(obj, val);
     }
