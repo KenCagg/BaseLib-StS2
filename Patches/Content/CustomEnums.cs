@@ -188,11 +188,14 @@ class GenEnumValues
         {
             var keywordInfo = field.GetCustomAttribute<CustomEnumAttribute>();
             var key = CustomEnums.GenerateKey(field.FieldType);
+            var t = field.DeclaringType;
+            if (t == null) continue;
+            
             field.SetValue(null, key);
 
             if (field.FieldType == typeof(CardKeyword))
             {
-                var keywordId = field.DeclaringType.GetPrefix() + (keywordInfo?.Name ?? field.Name).ToUpperInvariant();
+                var keywordId = t.GetPrefix() + (keywordInfo?.Name ?? field.Name).ToUpperInvariant();
                 var poolAttribute = field.GetCustomAttribute<KeywordPropertiesAttribute>();
                 var autoPosition = poolAttribute?.Position ?? AutoKeywordPosition.None;
 
@@ -212,8 +215,7 @@ class GenEnumValues
             
             //Following code is exclusively for CustomPile
             if (field.FieldType != typeof(PileType)) continue;
-            var t = field.DeclaringType;
-            if (t == null || !t.IsAssignableTo(typeof(CustomPile))) continue; 
+            if (!t.IsAssignableTo(typeof(CustomPile))) continue; 
                 
             var constructor = t.GetConstructor(BindingFlags.Instance | BindingFlags.Public, []) ?? throw new Exception($"CustomPile {t.FullName} with custom PileType does not have an accessible no-parameter constructor");
                 
